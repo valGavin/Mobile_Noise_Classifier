@@ -111,8 +111,6 @@ class Extractor {
             @Override
             public boolean process(AudioEvent audioEvent) {
                 counter_process++;
-                if (counter_process > 802)
-                    return false;
                 // Log.d(Thread.currentThread().getName(), "Get MFCC: EXTRACTING (" + counter_process + ")");
                 try {
                     mfccs_BQ.put(mfccs.getMFCC());

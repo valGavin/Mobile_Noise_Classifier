@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
 
                     // Run the thread.
                     mfccThread.run();
+
+                    // Make sure everything is extracted already, otherwise, wait for 1ms
                     if (!extractor.isDone)
                     {
                         try {
@@ -180,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                     classifyThread.run();
                 }
                 extractor.killDispatcher();
+                classifyThread.interrupt();
             }
         });
 
@@ -312,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         barChart.getXAxis().setTextColor(ColorTemplate.rgb("#FFFFFF"));
         barChart.getXAxis().setTypeface(Typeface.DEFAULT_BOLD);
+        barChart.getXAxis().setLabelCount(5);
         barChart.getLegend().setEnabled(false);
     }
 
@@ -368,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Check if all permissions are granted
             if (denied_count == 0) {
-                return;
+                Log.i(TAG, "ALL PERMISSIONS ARE GRANTED");
             }
 
             // If there are any not granted permission.
