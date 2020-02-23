@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="background">#1864A0</color>
+    <color name="list_view_bg">#2369A5</color>
+    <color name="test_app">#FFFFFF</color>
+    <color name="test_button">#009688</color>
+    <color name="test_button_text">#FFFFFF</color>
+
+    <color name="elements">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

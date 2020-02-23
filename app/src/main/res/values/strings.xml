@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Mobile Noise Classifier</string>
+    <string name="test_app">Noise Classifier</string>
+    <string name="test">TEST</string>
+    <string name="toggle_button">ToggleButton</string>
+    <string name="textview">TextView</string>
+    <string name="radio_mic">From Microphone</string>
+    <string name="radio_file">From File</string>
+    <string name="button_mic">START</string>
+    <string name="button_file">SELECT FILE</string>
+    <string name="five">5</string>
+    <string name="from_microphone">From Microphone</string>
+    <string name="from_file">From File</string>
+</resources>

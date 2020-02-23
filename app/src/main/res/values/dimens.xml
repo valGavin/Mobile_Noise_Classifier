@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="test_app">40sp</dimen>
+    <dimen name="test_button_text">20sp</dimen>
+    <dimen name="test_button">200dp</dimen>
+
+    <dimen name="elements">20sp</dimen>
+    <dimen name="padding_list">10dp</dimen>
+    <dimen name="prediction">20sp</dimen>
+    <dimen name="timer">50sp</dimen>
+</resources>
