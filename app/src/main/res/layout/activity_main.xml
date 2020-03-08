@@ -7,6 +7,16 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/custom_bar"
+        android:src="@drawable/bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/test_app"
         android:layout_width="wrap_content"
@@ -16,20 +26,35 @@
         android:textColor="@color/test_app"
         android:textSize="@dimen/test_app"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/bar_chart"
+        app:layout_constraintStart_toStartOf="@id/bar_chart"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ToggleButton
+        android:id="@+id/toggle_save"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/save_csv_button"
+        android:checked="false"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintBottom_toBottomOf="@id/test_app"
+        app:layout_constraintEnd_toEndOf="@id/bar_chart"
+        app:layout_constraintTop_toTopOf="@+id/test_app" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/bar_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="16dp"
+        android:layout_marginTop="4dp"
         android:background="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/test_app"
-        app:layout_constraintHeight_percent="0.5" />
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/test_app" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
@@ -37,52 +62,52 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bar_chart" >
+        app:layout_constraintTop_toBottomOf="@id/bar_chart">
 
         <RadioButton
             android:id="@+id/radio_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:onClick="onRadioButtonClicked"
             android:text="@string/from_file"
-            android:textColor="@color/test_button_text"
-            android:onClick="onRadioButtonClicked" />
+            android:textColor="@color/test_button_text" />
 
         <RadioButton
             android:id="@+id/radio_mic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="@string/from_microphone"
-            android:textColor="@color/test_button_text"
+            android:checked="true"
             android:onClick="onRadioButtonClicked"
-            android:checked="true" />
+            android:text="@string/from_microphone"
+            android:textColor="@color/test_button_text" />
     </RadioGroup>
 
     <Button
         android:id="@+id/button_file"
         android:layout_width="@dimen/test_button"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:background="@color/test_button"
         android:text="@string/button_file"
         android:textColor="@color/test_button_text"
         android:textSize="@dimen/test_button_text"
-        android:layout_margin="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button_mic"
         android:layout_width="@dimen/test_button"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:layout_marginBottom="50dp"
         android:background="@color/test_button"
         android:text="@string/button_mic"
         android:textColor="@color/test_button_text"
         android:textSize="@dimen/test_button_text"
-        android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -93,12 +118,11 @@
         android:layout_height="0dp"
         android:layout_margin="16dp"
         android:backgroundTint="@color/list_view_bg"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.22"
         app:layout_constraintStart_toEndOf="@+id/radioGroup"
         app:layout_constraintTop_toBottomOf="@id/bar_chart"
-        app:layout_constraintWidth_percent="0.5"
-        android:visibility="gone">
-    </ListView>
+        app:layout_constraintWidth_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

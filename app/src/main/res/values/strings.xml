@@ -11,4 +11,6 @@
     <string name="five">5</string>
     <string name="from_microphone">From Microphone</string>
     <string name="from_file">From File</string>
+    <string name="save_csv_desc">save feature to csv file</string>
+    <string name="custom_bar">Custom bar</string>
 </resources>

@@ -2,13 +2,13 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <TableRow>
+    <TableRow android:background="?android:attr/activatedBackgroundIndicator">
         <TextView
             android:id="@+id/item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:textColor="@color/test_button_text"/>
+            android:textColor="@color/test_button_text" />
     </TableRow>
 
 </TableLayout>

@@ -1,3 +1,24 @@
+/*
+ ***************************************************************************************************
+ * This java class is a free software; you can redistribute it and/or modify it under no terms
+ * as published by myself; either at this version or any later version.
+ *
+ * This java class is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR PARTICULAR PURPOSE.
+ *
+ * You will not receive any copy of any license along with this java class; if you do, you should
+ * question where that license came from.
+ *
+ * Created by: WIN ROEDILY (roedilywinner@gmail.com)
+ ***************************************************************************************************
+ */
+/*
+Extractor class will handle all the feature extraction process done by TarsosDSP library.
+The difficult part of this class is that we need to adjust the frame and overlap size for it to
+extract the frame according to the number of frames we desire.
+Saving to CSV method also done in this class.
+ */
+
 package com.example.mobilenoiseclassifier;
 
 import android.annotation.SuppressLint;
@@ -11,7 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -24,13 +44,19 @@ class Extractor {
     // Log report TAG
     private String TAG  = "Extractor";
 
+    // CSV Directory
+    File CSV_Dir;
+    // Save to csv status
+    boolean save_csv    = false;
+    // BlockingQueue to store features
+    BlockingQueue<float[]> mfccs_BQ = new LinkedBlockingQueue<>(2048);
+
     // Process counter and status
     private int counter_process = 0;
     private int counter_writer  = 0;
     boolean isDone  = false;
-
-    // BlockingQueue to store features
-    BlockingQueue<float[]> mfccs_BQ = new LinkedBlockingQueue<>(1024);
+    // Properties for MFCC Extraction
+    int frame_size;                                 // Buffer size
 
     // PrintWriter for writing to CSV file
     private PrintWriter printWriter = null;
@@ -41,14 +67,13 @@ class Extractor {
     // Properties for AudioDispatcher
     private int sample_rate = 8000;
     private int size        = 400;
-    private int overlap     = 281;
+    int cepstrum_c  = 40;                           // Number of MFCC to extract per frame
     private int mic_size    = 640;
-    private int mic_overlap = 527;
-
-    // Properties for MFCC Extraction
-    private int frame_size;                                 // Buffer size
-    private int cepstrum_c  = 25;                           // Number of MFCC to extract per frame
-    private int melFilter   = 25;                           // Points for FilterBank
+    // Selected item from ListView
+    private String passed_item;
+    private int overlap     = 322;
+    private int mic_overlap = 564;
+    private int melFilter   = 40;                           // Points for FilterBank
     private float low_freq  = 0f;                           // Lower frequency
     private float hi_freq   = ((float)sample_rate)/2f;      // High frequency is half the sample rate
 
@@ -74,8 +99,10 @@ class Extractor {
     void initDispatcher_file(String item)
     {
         Log.i(TAG, "Create Dispatcher: INITIALIZE");
+        passed_item = item;
+
         audioDispatcher = AudioDispatcherFactory.fromPipe(
-                "/storage/emulated/0/CSV/" + item + ".wav",
+                "/storage/emulated/0/CSV/" + passed_item,
                 sample_rate, size, overlap);
         frame_size  = size;
         Log.i(TAG, "Create Dispatcher: COMPLETE");
@@ -114,7 +141,8 @@ class Extractor {
                 // Log.d(Thread.currentThread().getName(), "Get MFCC: EXTRACTING (" + counter_process + ")");
                 try {
                     mfccs_BQ.put(mfccs.getMFCC());
-                    // saver.run();
+                    if (save_csv)
+                        saver.run();
                 } catch (Exception e) {
                     Log.e(Thread.currentThread().getName(), "Get MFCC: FAILED");
                     e.printStackTrace();
@@ -136,18 +164,6 @@ class Extractor {
         });
 
         audioDispatcher.run();
-    }
-
-    private void padding() {
-        counter_writer++;
-        if (counter_writer <= 401)
-        {
-            Log.d(Thread.currentThread().getName(), "Writing to CSV file: PADDING (" + counter_writer + ")");
-            for (int i = 0; i < cepstrum_c; i++)
-                printWriter.print("0, ");
-            printWriter.print("\r\n");
-            printWriter.flush();
-        }
     }
 
     /**
@@ -173,10 +189,9 @@ class Extractor {
      */
     void pathChecker() {
         String CSV_Path = "/storage/emulated/0/CSV";
-        String CSV_File;
 
         Log.d(TAG, "Creating new file: INITIALIZING");
-        File CSV_Dir = new File(CSV_Path);
+        CSV_Dir = new File(CSV_Path);
         Log.d(TAG, "Creating new file: COMPLETE");
 
         Log.d(TAG, "Checking file path: CHECKING");
@@ -186,18 +201,20 @@ class Extractor {
             fileExistence = CSV_Dir.mkdirs();
             Log.d(TAG, "Folder created");
         }
-        if (fileExistence) {
-            Log.i(TAG, "Folder found");
-            try {
-                CSV_File = CSV_Dir.toString() + File.separator + "features_8kHz_25.csv";
+    }
 
-                Log.d(TAG, "Create PrintWriter: CREATING");
-                printWriter = new PrintWriter(new FileWriter(CSV_File, false));
-                Log.d(TAG, "Create PrintWriter: COMPLETE --> " + CSV_File);
-            } catch (IOException e) {
-                Log.e(TAG, "Create PritWriter: FAILED");
-                e.printStackTrace();
-            }
+    void csv_creator() {
+        String CSV_File;
+
+        try {
+            CSV_File    = CSV_Dir.toString() + File.separator + "features_" + passed_item + ".csv";
+
+            Log.d(TAG, "Create PrintWriter: CREATING");
+            printWriter = new PrintWriter(new FileWriter(CSV_File, false));
+            Log.d(TAG, "Create PrintWriter: COMPLETE --> " + CSV_File);
+        } catch (IOException e) {
+            Log.e(TAG, "Create PritWriter: FAILED");
+            e.printStackTrace();
         }
     }
 
@@ -208,9 +225,11 @@ class Extractor {
      */
     void killDispatcher() {
         Log.d(TAG, "Kill Dispatcher: TERMINATING");
-        audioDispatcher.stop();
-        audioDispatcher = null;
-        mfccs_BQ.clear();
+        if (!audioDispatcher.isStopped())
+        {
+            audioDispatcher.stop();
+            audioDispatcher = null;
+        }
         Log.d(TAG, "Kill Dispatcher: COMPLETE");
     }
 }

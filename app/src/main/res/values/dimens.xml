@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="test_app">40sp</dimen>
+    <dimen name="test_app">30sp</dimen>
     <dimen name="test_button_text">20sp</dimen>
     <dimen name="test_button">200dp</dimen>
 
