@@ -402,16 +402,10 @@ public class MainActivity extends AppCompatActivity {
         Interpreter interpreter = new Interpreter(model_loader());
 
         ByteBuffer byteBuffer;
-        switch (source)
-        {
-            case FILE:
-                byteBuffer   = matrix_to_byte(feature_vector);
-                break;
-            case MIC:
-                byteBuffer  = matrix_to_byte(mic_feature_vec);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + source);
+        if (source == FILE) {
+            byteBuffer = matrix_to_byte(feature_vector);
+        } else {
+            byteBuffer = matrix_to_byte(mic_feature_vec);
         }
 
         // Run the graph
@@ -423,16 +417,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ByteBuffer matrix_to_byte(float[] vector) {
         ByteBuffer data;
-        switch (source)
-        {
-            case FILE:
-                data = ByteBuffer.allocateDirect(feature_vector.length * 4);
-                break;
-            case MIC:
-                data = ByteBuffer.allocateDirect(mic_feature_vec.length * 4);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + source);
+        if (source == FILE) {
+            data = ByteBuffer.allocateDirect(feature_vector.length * 4);
+        } else {
+            data = ByteBuffer.allocateDirect(mic_feature_vec.length * 4);
         }
         data.order(ByteOrder.nativeOrder());
         data.rewind();
@@ -449,16 +437,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private MappedByteBuffer model_loader() throws IOException {
         String path;
-        switch (source)
-        {
-            case FILE:
-                path    = "classifier_40_612.tflite";
-                break;
-            case MIC:
-                path    = "classifier_40_102.tflite";
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + source);
+        if (source == FILE) {
+            path = "classifier_40_612.tflite";
+        } else {
+            path = "classifier_40_102.tflite";
         }
         AssetFileDescriptor assetFileDescriptor = this.getAssets().openFd(path);
         FileInputStream fileInputStream     = new FileInputStream(assetFileDescriptor.getFileDescriptor());
@@ -561,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 for (Map.Entry<String, Integer> entry : permission_results.entrySet()) {
                     String permission_name  = entry.getKey();
-                    int permissions_result  = entry.getValue();
+                    entry.getValue();
 
                     /*
                     Permission is denied (the "never ask again" is not checked).
