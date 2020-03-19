@@ -438,9 +438,9 @@ public class MainActivity extends AppCompatActivity {
     private MappedByteBuffer model_loader() throws IOException {
         String path;
         if (source == FILE) {
-            path = "classifier_40_612.tflite";
+            path = "classifier_612.tflite";
         } else {
-            path = "classifier_40_102.tflite";
+            path = "classifier_102.tflite";
         }
         AssetFileDescriptor assetFileDescriptor = this.getAssets().openFd(path);
         FileInputStream fileInputStream     = new FileInputStream(assetFileDescriptor.getFileDescriptor());

@@ -44,8 +44,7 @@ class Extractor {
     // Log report TAG
     private String TAG  = "Extractor";
 
-    // CSV Directory
-    File CSV_Dir;
+    int cepstrum_c = 40;                           // Number of MFCC to extract per frame
     // Save to csv status
     boolean save_csv    = false;
     // BlockingQueue to store features
@@ -55,8 +54,8 @@ class Extractor {
     private int counter_process = 0;
     private int counter_writer  = 0;
     boolean isDone  = false;
-    // Properties for MFCC Extraction
-    int frame_size;                                 // Buffer size
+    // CSV Directory
+    private File CSV_Dir;
 
     // PrintWriter for writing to CSV file
     private PrintWriter printWriter = null;
@@ -67,15 +66,15 @@ class Extractor {
     // Properties for AudioDispatcher
     private int sample_rate = 8000;
     private int size        = 400;
-    int cepstrum_c  = 40;                           // Number of MFCC to extract per frame
+    // Properties for MFCC Extraction
+    private int frame_size;                                 // Buffer size
     private int mic_size    = 640;
-    // Selected item from ListView
-    private String passed_item;
     private int overlap     = 322;
     private int mic_overlap = 564;
     private int melFilter   = 40;                           // Points for FilterBank
     private float low_freq  = 0f;                           // Lower frequency
     private float hi_freq   = ((float)sample_rate)/2f;      // High frequency is half the sample rate
+    private String passed_item;                             // Selected item from ListView
 
     // Thread for save the extracted features to CSV file.
     private final Thread saver    = new Thread(new Runnable() {
@@ -200,6 +199,7 @@ class Extractor {
             Log.d(TAG, "Folder not found: CREATING");
             fileExistence = CSV_Dir.mkdirs();
             Log.d(TAG, "Folder created");
+            Log.i(TAG, "File Existence: " + fileExistence);
         }
     }
 
