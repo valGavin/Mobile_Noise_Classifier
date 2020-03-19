@@ -1,16 +1,19 @@
 /*
- ***************************************************************************************************
- * This java class is a free software; you can redistribute it and/or modify it under no terms
- * as published by myself; either at this version or any later version.
- *
- * This java class is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR PARTICULAR PURPOSE.
- *
- * You will not receive any copy of any license along with this java class; if you do, you should
- * question where that license came from.
- *
- * Created by: WIN ROEDILY (roedilywinner@gmail.com)
- ***************************************************************************************************
+ This code is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the
+ Free Software Foundation; either version 3.0 of the License, or (at your
+ option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
+
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+
+ Created by: WIN ROEDILY (roedilywinner@gmail.com)
  */
 /*
  This is the main class of the activity; work as an entry point.
