@@ -13,4 +13,5 @@
     <string name="from_file">From File</string>
     <string name="save_csv_desc">save feature to csv file</string>
     <string name="custom_bar">Custom bar</string>
+    <string name="start_record">Start record</string>
 </resources>

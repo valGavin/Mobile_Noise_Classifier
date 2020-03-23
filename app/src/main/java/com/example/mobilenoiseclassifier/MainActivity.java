@@ -41,6 +41,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.ToggleButton;
@@ -89,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
     // Source of audio
     private static final int FILE   = 1;
     private static final int MIC    = 2;
+
     // TFLite model variables
     private static final int NUM_CLASSES    = 5;
+
     // Audio migration props
     AssetManager assetManager;
     InputStream inputStream;
@@ -100,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     File[] audio_list   = {null, null, null, null, null, null};
     float[] feature_vector;
     float[] mic_feature_vec;
+
     // ListView properties
     String item  = "car.wav";
     String[] labels         = {"Horn", "Crowd", "Dog", "Siren", "Traffic"};
@@ -111,11 +115,13 @@ public class MainActivity extends AppCompatActivity {
     BarDataSet barDataSet;
     BarData barData;
     XAxis xAxis;
+
     // Buttons
     RadioButton radio_file, radio_mic;
     ListView listView;
     ToggleButton toggle_save;
-    Button button_file, button_mic;
+    Button button_file;
+    ImageButton button_mic, button_stop;
     private int source;
 
     /*
@@ -143,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         radio_mic   = findViewById(R.id.radio_mic);
         button_file = findViewById(R.id.button_file);
         button_mic  = findViewById(R.id.button_mic);
+        button_stop = findViewById(R.id.button_stop);
         barChart    = findViewById(R.id.bar_chart);
 
         // Set up the list and the click listener
@@ -171,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         extractor.pathChecker();
         feature_vector = new float[FRAME_FILE * extractor.cepstrum_c];
         mic_feature_vec = new float[FRAME_MIC * extractor.cepstrum_c];
+
 
         /*
         ====================================================================================
@@ -215,6 +223,55 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        final CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
+            @Override
+            public void onTick(long l) {
+                int counter = 0;
+                for (int i = 0; i < 102; i++) {
+                    try {
+                        float[] received_features = extractor.mfccs_BQ.take();
+                        for (float feature : received_features) {
+                            mic_feature_vec[counter] = feature;
+                            counter++;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                classifyThread.run();
+            }
+
+            @Override
+            public void onFinish() {
+                extractor.killDispatcher();
+                if (!extractor.mfccs_BQ.isEmpty()) {
+                    try {
+                        int counter = 0;
+                        float[] received_features = extractor.mfccs_BQ.take();
+                        //Log.d(Thread.currentThread().getName(), "Feature: " + received_features[0]);
+                        for (float feature : received_features) {
+                            mic_feature_vec[counter] = feature;
+                            counter++;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    classifyThread.run();
+                }
+                extractor.mfccs_BQ.clear();
+                classifyThread.interrupt();
+
+                button_mic.setVisibility(View.VISIBLE);
+                button_mic.setEnabled(true);
+                button_mic.setClickable(true);
+                button_stop.setVisibility(View.GONE);
+                button_stop.setEnabled(false);
+                button_stop.setClickable(false);
+            }
+        };
 
         /*
         ====================================================================================
@@ -304,6 +361,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Disable button after click to avoid double-click
+                button_stop.setVisibility(View.VISIBLE);
+                button_stop.setEnabled(true);
+                button_stop.setClickable(true);
+                button_mic.setVisibility(View.GONE);
                 button_mic.setEnabled(false);
                 button_mic.setClickable(false);
 
@@ -318,54 +379,27 @@ public class MainActivity extends AppCompatActivity {
                     // Run the thread.
                     mfccThread.start();
 
-                    new CountDownTimer(6000, 500) {
-                        @Override
-                        public void onTick(long l) {
-                            int counter = 0;
-                            for (int i = 0; i < 102; i++)
-                            {
-                                try {
-                                    float[] received_features   = extractor.mfccs_BQ.take();
-                                    for (float feature : received_features) {
-                                        mic_feature_vec[counter] = feature;
-                                        counter++;
-                                    }
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            classifyThread.run();
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            extractor.killDispatcher();
-                            if (!extractor.mfccs_BQ.isEmpty())
-                            {
-                                try {
-                                    int counter = 0;
-                                    float[] received_features   = extractor.mfccs_BQ.take();
-                                    //Log.d(Thread.currentThread().getName(), "Feature: " + received_features[0]);
-                                    for (float feature : received_features) {
-                                        mic_feature_vec[counter] = feature;
-                                        counter++;
-                                    }
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
-                                classifyThread.run();
-                            }
-                            extractor.mfccs_BQ.clear();
-                            classifyThread.interrupt();
-                        }
-                    }.start();
+                    countDownTimer.start();
                 }
+            }
+        });
 
-                // Bring the button back
+        button_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                button_mic.setVisibility(View.VISIBLE);
                 button_mic.setEnabled(true);
                 button_mic.setClickable(true);
+                button_stop.setVisibility(View.GONE);
+                button_stop.setEnabled(false);
+                button_stop.setClickable(false);
+
+                countDownTimer.cancel();
+
+                extractor.killDispatcher();
+                extractor.mfccs_BQ.clear();
+
+                classifyThread.interrupt();
             }
         });
     }

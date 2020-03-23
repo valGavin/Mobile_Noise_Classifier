@@ -28,7 +28,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/bar_chart"
         app:layout_constraintStart_toStartOf="@id/bar_chart"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ToggleButton
         android:id="@+id/toggle_save"
@@ -98,18 +98,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/button_mic"
-        android:layout_width="@dimen/test_button"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="16dp"
         android:layout_marginBottom="50dp"
-        android:background="@color/test_button"
-        android:text="@string/button_mic"
-        android:textColor="@color/test_button_text"
-        android:textSize="@dimen/test_button_text"
+        android:background="@drawable/button_record"
+        android:contentDescription="@string/start_record"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/button_stop"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/button_stop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/start_record"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ListView

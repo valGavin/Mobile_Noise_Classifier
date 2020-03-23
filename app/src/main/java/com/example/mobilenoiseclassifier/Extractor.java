@@ -126,6 +126,9 @@ class Extractor {
      */
     void mfcc()
     {
+        if (!mfccs_BQ.isEmpty())
+            mfccs_BQ.clear();
+
         Log.d(TAG, "Create MFCC Object: INITIALIZE");
         final MFCC mfccs  = new MFCC(frame_size, sample_rate, cepstrum_c, melFilter, low_freq, hi_freq);
         Log.d(TAG, "Create MFCC Object: COMPLETE");
