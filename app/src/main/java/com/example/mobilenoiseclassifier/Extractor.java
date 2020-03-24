@@ -52,6 +52,7 @@ class Extractor {
     boolean save_csv    = false;
     // BlockingQueue to store features
     BlockingQueue<float[]> mfccs_BQ = new LinkedBlockingQueue<>(2048);
+    boolean silence = true;
 
     // Process counter and status
     private int counter_process = 0;
@@ -67,6 +68,7 @@ class Extractor {
     private AudioDispatcher audioDispatcher = null;
 
     // Properties for AudioDispatcher
+    private float threshold = -95;
     private int sample_rate = 8000;
     private int size        = 400;
     // Properties for MFCC Extraction
@@ -78,6 +80,7 @@ class Extractor {
     private float low_freq  = 0f;                           // Lower frequency
     private float hi_freq   = ((float)sample_rate)/2f;      // High frequency is half the sample rate
     private String passed_item;                             // Selected item from ListView
+    private boolean mic = false;
 
     // Thread for save the extracted features to CSV file.
     private final Thread saver    = new Thread(new Runnable() {
@@ -107,6 +110,7 @@ class Extractor {
                 "/storage/emulated/0/CSV/" + passed_item,
                 sample_rate, size, overlap);
         frame_size  = size;
+        mic = false;
         Log.i(TAG, "Create Dispatcher: COMPLETE");
     }
 
@@ -118,6 +122,7 @@ class Extractor {
         Log.i(TAG, "Create Dispatcher: INITIALIZE");
         audioDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(sample_rate, mic_size, mic_overlap);
         frame_size  = mic_size;
+        mic = true;
         Log.i(TAG, "Create Dispatcher: COMPLETE");
     }
 
@@ -142,8 +147,27 @@ class Extractor {
         audioDispatcher.addAudioProcessor(new AudioProcessor() {
             @Override
             public boolean process(AudioEvent audioEvent) {
+                float[] buffer = audioEvent.getFloatBuffer();
+                double level = sound_pressure_level(buffer);
                 counter_process++;
                 // Log.d(Thread.currentThread().getName(), "Get MFCC: EXTRACTING (" + counter_process + ")");
+                if (mic) {
+                    if (level > threshold) {
+                        silence = false;
+                        extract();
+                    } else {
+                        silence = true;
+                    }
+                } else {
+                    extract();
+                }
+
+                //Log.d(Thread.currentThread().getName(), "Get MFCC: COMPLETE");
+
+                return true;
+            }
+
+            private void extract() {
                 try {
                     mfccs_BQ.put(mfccs.getMFCC());
                     if (save_csv)
@@ -152,10 +176,15 @@ class Extractor {
                     Log.e(Thread.currentThread().getName(), "Get MFCC: FAILED");
                     e.printStackTrace();
                 }
+            }
 
-                //Log.d(Thread.currentThread().getName(), "Get MFCC: COMPLETE");
+            private double sound_pressure_level(final float[] buffer) {
+                double power = 0.0D;
+                for (float element : buffer)
+                    power += element * element;
 
-                return true;
+                double value = Math.pow(power, 0.5) / buffer.length;
+                return 20.0 * Math.log10(value);
             }
 
             @Override

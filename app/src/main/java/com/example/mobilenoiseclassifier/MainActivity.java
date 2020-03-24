@@ -228,20 +228,26 @@ public class MainActivity extends AppCompatActivity {
         final CountDownTimer countDownTimer = new CountDownTimer(60000, 1000) {
             @Override
             public void onTick(long l) {
-                int counter = 0;
-                for (int i = 0; i < 102; i++) {
-                    try {
-                        float[] received_features = extractor.mfccs_BQ.take();
-                        for (float feature : received_features) {
-                            mic_feature_vec[counter] = feature;
-                            counter++;
+                if (!extractor.silence) {
+                    int counter = 0;
+                    for (int i = 0; i < 102; i++) {
+                        try {
+                            float[] received_features = extractor.mfccs_BQ.take();
+                            for (float feature : received_features) {
+                                mic_feature_vec[counter] = feature;
+                                counter++;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-                }
 
-                classifyThread.run();
+                    classifyThread.run();
+                } else {
+                    classifyThread.interrupt();
+                    extractor.mfccs_BQ.clear();
+                    reset_chart();
+                }
             }
 
             @Override
@@ -390,13 +396,6 @@ public class MainActivity extends AppCompatActivity {
         button_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                button_mic.setVisibility(View.VISIBLE);
-                button_mic.setEnabled(true);
-                button_mic.setClickable(true);
-                button_stop.setVisibility(View.GONE);
-                button_stop.setEnabled(false);
-                button_stop.setClickable(false);
-
                 countDownTimer.cancel();
 
                 extractor.killDispatcher();
@@ -405,6 +404,15 @@ public class MainActivity extends AppCompatActivity {
                 classifyThread.interrupt();
 
                 reset_chart();
+
+                button_mic.setVisibility(View.VISIBLE);
+                button_mic.setEnabled(true);
+                button_mic.setClickable(true);
+                button_stop.setVisibility(View.GONE);
+                button_stop.setEnabled(false);
+                button_stop.setClickable(false);
+
+
             }
         });
     }
