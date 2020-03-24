@@ -73,6 +73,7 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
                 extractor.mfccs_BQ.clear();
                 classifyThread.interrupt();
 
+                reset_chart();
+
                 button_mic.setVisibility(View.VISIBLE);
                 button_mic.setEnabled(true);
                 button_mic.setClickable(true);
@@ -400,8 +403,16 @@ public class MainActivity extends AppCompatActivity {
                 extractor.mfccs_BQ.clear();
 
                 classifyThread.interrupt();
+
+                reset_chart();
             }
         });
+    }
+
+    private void reset_chart() {
+        for (float[] row : output)
+            Arrays.fill(row, (float) 0.0);
+        draw_chart(output);
     }
 
     public void onRadioButtonClicked(View view) {
